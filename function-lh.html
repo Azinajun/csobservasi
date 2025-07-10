@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluasi Function Lh</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-color: #bdc3c7;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 250px;
+        }
+        
+        .user-info div {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info label {
+            width: 70px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .user-info input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .user-info input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .title {
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .title h1 {
+            margin: 0;
+            color: var(--dark-color);
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .title p {
+            margin: 5px 0 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+            align-self: flex-end;
+        }
+        
+        .save-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .save-btn i {
+            font-size: 18px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+        }
+        
+        th {
+            background-color: var(--dark-color);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-color);
+        }
+        
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .method-cell {
+            text-align: center;
+            width: 100px;
+        }
+        
+        .method-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            border-radius: 50%;
+            margin: 0 5px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .method-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .method-btn.o {
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .method-btn.x {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .method-btn.selected.o {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .method-btn.selected.x {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 40px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .user-info {
+                width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+ <style>
+        .logo-daihatsu {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            height: 80px;
+            z-index: 999;
+        }
+    </style>
+
+</head>
+<body>
+  <img class="logo-daihatsu" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4RD0RXhpZgAATU0AKgAAAAgABAE7AAIAAAAOAAAISodpAAQAAAABAAAIWJydAAEAAAAcAAAQ0OocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAENlcHB5IFNlbmpheWEAAAWQAwACAAAAFAAAEKaQBAACAAAAFAAAELqSkQACAAAAAzY2AACSkgACAAAAAzY2AADqHAAHAAAIDAAACJoAAAAAHOoAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMDIzOjAyOjA2IDA4OjE0OjU3ADIwMjM6MDI6MDYgMDg6MTQ6NTcAAABDAGUAcABwAHkAIABTAGUAbgBqAGEAeQBhAAAA/+ELIGh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4NCjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iPjxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iLz48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyI+PHhtcDpDcmVhdGVEYXRlPjIwMjMtMDItMDZUMDg6MTQ6NTcuNjU3PC94bXA6Q3JlYXRlRGF0ZT48L3JkZjpEZXNjcmlwdGlvbj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyI+PGRjOmNyZWF0b3I+PHJkZjpTZXEgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOmxpPkNlcHB5IFNlbmpheWE8L3JkZjpsaT48L3JkZjpTZXE+DQoJCQk8L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwveDp4bXBtZXRhPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNr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" alt="Logo Daihatsu">
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" placeholder="Your name">
+                </div>
+                <div>
+                    <label for="npk">NPK:</label>
+                    <input type="text" id="npk" placeholder="Your NPK">
+                </div>
+            </div>
+            
+            <div class="title">
+                <h1>Evaluasi Function Lh D29D</h1>
+                <p>Vehicle Audit</p>
+            </div>
+        </div>
+
+        <table id="checksheet">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">No</th>
+                    <th style="width: 200px;">Area</th>
+                    <th>Item Check</th>
+                    <th style="width: 120px;">Metode</th>
+                    <th style="width: 250px;">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table content will be generated by JavaScript -->
+            </tbody>
+        </table>
+
+        <button id="saveBtn" class="save-btn">
+            <i class="fas fa-save"></i>
+            Simpan
+        </button>
+    </div>
+       
+    <script>
+        // Data from the Excel file
+const checkData = [
+    { no: 1, area: "Hood inner, cowl ventilator inner", items: [
+        "1.Check pengait pembantu (auxiliary catch)",
+        "2.Buka hood, pasang stay hood.",
+        "3.Check componen hood inner(semua sisi Rh & Lh)",
+        "4.Check hood hinge (semua sisi Rh & sisi Lh)",
+        "5.Check weather strip",
+        "6.Check cowl louver(semua sisi Rh & Lh)"
+    ]},
+    { no: 2, area: "Check Front E/G room", items: [
+        "1.Check componen Front E/G room (semua sisi Rh & Lh)",
+        "2.Check kondisi part assembly",
+        "3.Check label.",
+        "4.Check fluid volume pada tiap part.",
+        "5.Check extra part.",
+        "6.Tutup hood."
+    ]},
+    { no: 3, area: "Check hood outer area, windshield dan cowl top ventilator (semua sisi Rh & Lh)", items: [
+        "1.Check front nozzle & emblem.",
+        "2.Check cowl top vent outer.",
+        "3.Check front wiper.",
+        "4.Check windshield glass outer & Moulding.",
+        "5.Check cover smart assist dari sisi depan."
+    ]},
+    { no: 4, area: "Fr fender Rh", items: [
+        "1.Check tire & wheel rim.",
+        "2.Check fender liner.",
+        "3.Check mud guard.",
+        "4.Check area wheel house."
+    ]},
+    { no: 5, area: "Fr. Parts (semua sisi Rh & Lh)", items: [
+        "1.Check Fr bumper.",
+        "2.Check radiator grill.",
+        "3.Check head lamp."
+    ]},
+    { no: 6, area: "Fr fender Lh", items: [
+        "1.Check tire & wheel rim.",
+        "2.Check fender liner.",
+        "3.Check mud guard.",
+        "4.Check area wheel house.",
+        "5.Check fender mirror."
+    ]},
+    { no: 7, area: "Check Front fitting", items: [
+        "1.Check body dan part fitting. (sekitar hood dari sisi driver sampai sisi passenger)",
+        "2.Berdiri di bagian depan unit dan check fitting"
+    ]},
+    { no: 8, area: "Check fr door outer", items: [
+        "1.Check door belt molding.",
+        "2.Check glass run.",
+        "3.Check door mirror.",
+        "4.Check door outside handle.",
+        "5.Check cylinder key.",
+        "6.Check plug hole roker panel."
+    ]},
+    { no: 9, area: "Pintu depan bagian dalam ※Bagi area door frame dan bawah", items: [
+        "1.Buka pintu",
+        "2.Check door weather strip",
+        "3.Check glass run & mirror base.",
+        "4.Check front door hinge & wire harness grommet",
+        "5.Check door trim, Arm rest, power window switch base, inner handle.",
+        "6.Check speaker.",
+        "7.Check Fr door glass"
+    ]},
+    { no: 10, area: "Fr door opening", items: [
+        "1.Check scuff plate.",
+        "2.Check area check pin.",
+        "3.Check hinge dan gromet wire fr door.",
+        "4.Check opening trim.",
+        "5.Check lock striker.",
+        "6.Check Label VIN Number.",
+        "7.Check courtesy switch & plug hole."
+    ]},
+    { no: 11, area: "Check instrumen panel under", items: [
+        "1.Check cowl side garnish.",
+        "2.Check instrumen panel lower",
+        "3.Buka glove box dan check komponen di belakang glove box.",
+        "4.Check componen under instrument panel.",
+        "5.Check floor carpet"
+    ]},
+    { no: 12, area: "Check Engine compartment (passenger)", items: [
+        "1.Check magic tape carpet penutup lock seat.",
+        "2.Check lock Fr seat.",
+        "3.Buka Fr seat untuk pengecheckan E/G room.",
+        "4.Check komponen under Fr seat.",
+        "5.Check componen E/G room.",
+        "6.Check kondisi part assembly",
+        "7.Check label.",
+        "8.Check fluid volume untuk masing-masing part",
+        "9.Konfirmasi tidak ada Extra part."
+    ]},
+    { no: 13, area: "Check Instrumen panel", items: [
+        "1.Masuk dan tutup pintu",
+        "2.Check power door lock.",
+        "3.Check side register.",
+        "4.Check glove box",
+        "5.Check instrumen panel upper & cover air bag."
+    ]},
+    { no: 14, area: "Front pillar, roof head lining", items: [
+        "1.Check front pillar garnish & assist grip.",
+        "2.Check windshield glass sisi dalam",
+        "3.Check sun visor.",
+        "4.Check cover smart assist sisi Lh.",
+        "5.Check roof headlining."
+    ]},
+    { no: 15, area: "Front seat (step1)", items: [
+        "1.Check pengoperasian sliding",
+        "2.Check pengatur sliding (clik)",
+        "3.Check seat reclining operation.",
+        "4.Check seat belt.",
+        "5.Check seat belt shoulder adjuster.",
+        "6.Open the door, check opening trim inner & get out of vehicle."
+    ]},
+    { no: 16, area: "Front seat (step2)", items: [
+        "1.Check seat cushion, seat back & Cover reclining.",
+        "2.Check headrest.",
+        "3.Kembalikan seat back ke posisi atas & Slide ke posisi paling depan",
+        "4.Check sisi luar seat"
+    ]},
+    { no: 17, area: "Check door lock operation", items: [
+        "1.Check fungsi front door lock",
+        "2.Tutup & check window fr door Lh inner.",
+        "3.Tutup pintu."
+    ]},
+    { no: 18, area: "Check fitting Fr door", items: [
+        "1.Check appearance Fr door glass outer.",
+        "2.Check fitting Fr door menyeluruh.",
+        "3.Konfirmasi ulang dengan posisi badan agak mundur."
+    ]}
+];
+
+        // Generate the table
+        const tableBody = document.querySelector('#checksheet tbody');
+        
+        checkData.forEach(section => {
+            section.items.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                if (index === 0) {
+                    const noCell = document.createElement('td');
+                    noCell.rowSpan = section.items.length;
+                    noCell.textContent = section.no;
+                    row.appendChild(noCell);
+                    
+                    const areaCell = document.createElement('td');
+                    areaCell.rowSpan = section.items.length;
+                    areaCell.innerHTML = section.area.replace(/<br>/g, '<br>');
+                    row.appendChild(areaCell);
+                }
+                
+                const itemCell = document.createElement('td');
+                itemCell.textContent = item;
+                row.appendChild(itemCell);
+                
+                const methodCell = document.createElement('td');
+                methodCell.className = 'method-cell';
+                
+                const oBtn = document.createElement('button');
+                oBtn.className = 'method-btn o';
+                oBtn.textContent = 'O';
+                oBtn.addEventListener('click', () => {
+                    oBtn.classList.toggle('selected');
+                    xBtn.classList.remove('selected');
+                });
+
+                const xBtn = document.createElement('button');
+                xBtn.className = 'method-btn x';
+                xBtn.textContent = 'X';
+                xBtn.addEventListener('click', () => {
+                    xBtn.classList.toggle('selected');
+                    oBtn.classList.remove('selected');
+                });
+
+                methodCell.appendChild(oBtn);
+                methodCell.appendChild(xBtn);
+                row.appendChild(methodCell);
+
+                const noteCell = document.createElement('td');
+                const noteInput = document.createElement('textarea');
+                noteCell.appendChild(noteInput);
+                row.appendChild(noteCell);
+
+                tableBody.appendChild(row);
+            });
+        });
+
+        // Export to Excel function
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+                ['No', 'Area', 'Item Check', 'Metode', 'Note']
+            ];
+
+            let currentNo = '', currentArea = '';
+            const rows = document.querySelectorAll('#checksheet tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.children;
+                if (cells.length === 5) {
+                    currentNo = cells[0].innerText;
+                    currentArea = cells[1].innerText;
+                    var item = cells[2].innerText;
+                    var method = cells[3].querySelector('.method-btn.selected')?.textContent || '';
+                    var note = cells[4].querySelector('textarea').value;
+                } else if (cells.length === 3) {
+                    var item = cells[0].innerText;
+                    var method = cells[1].querySelector('.method-btn.selected')?.textContent || '';
+                    var note = cells[2].querySelector('textarea').value;
+                }
+
+                wsData.push([currentNo, currentArea, item, method, note]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Checksheet');
+
+            const name = document.getElementById('name').value || 'unknown';
+            const npk = document.getElementById('npk').value || '0000';
+            const fileName = `Checksheet_${name}_${npk}.xlsx`;
+
+            XLSX.writeFile(wb, fileName);
+        });
+    </script>
+</body>
+</html>
