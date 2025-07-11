@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluasi Under Body</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-color: #bdc3c7;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 250px;
+        }
+        
+        .user-info div {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info label {
+            width: 70px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .user-info input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .user-info input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .title {
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .title h1 {
+            margin: 0;
+            color: var(--dark-color);
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .title p {
+            margin: 5px 0 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+            align-self: flex-end;
+        }
+        
+        .save-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .save-btn i {
+            font-size: 18px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+        }
+        
+        th {
+            background-color: var(--dark-color);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-color);
+        }
+        
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .method-cell {
+            text-align: center;
+            width: 100px;
+        }
+        
+        .method-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            border-radius: 50%;
+            margin: 0 5px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .method-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .method-btn.o {
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .method-btn.x {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .method-btn.selected.o {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .method-btn.selected.x {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 40px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column-reverse !important;
+        gap: 15px;
+    }
+
+    .logo-daihatsu {
+        position: static !important;
+        display: block;
+        margin: 0 auto 10px;
+        height: 50px !important;
+    }
+
+    .title h1 {
+        font-size: 18px !important;
+    }
+
+    .title p {
+        font-size: 12px !important;
+    }
+
+    .save-btn {
+        font-size: 14px !important;
+        padding: 10px 16px !important;
+    }
+
+    th, td, textarea, input {
+        font-size: 14px !important;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+<div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" placeholder="Your name">
+                </div>
+                <div>
+                    <label for="npk">NPK:</label>
+                    <input type="text" id="npk" placeholder="Your NPK">
+                </div>
+            </div>
+            
+            <div class="title">
+                <h1>Evaluasi Under Body D29D</h1>
+                <p>Vehicle Audit</p>
+            </div>
+        </div>
+
+        <table id="checksheet">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">No</th>
+                    <th style="width: 200px;">Area</th>
+                    <th>Item Check</th>
+                    <th style="width: 120px;">Metode</th>
+                    <th style="width: 250px;">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table content will be generated by JavaScript -->
+            </tbody>
+        </table>
+
+        <button id="saveBtn" class="save-btn">
+            <i class="fas fa-save"></i>
+            Simpan
+        </button>
+    </div>
+       
+    <script>
+        // Data from the Excel file
+const checkData = [
+    { no: 1, area: "Buka cover engine", items: [
+        "1. Lepas bolt cover engine area depan",
+        "2. Lepas clip cover engine."
+    ]},
+    { no: 2, area: "Tightening torque ▽S ▽E", items: [
+        "1. Check nut tie rod Ⓧ Tie rod end.",
+        "2. Check nut fr bush Lwr arm Ⓧ fr member",
+        "3. Check bolt fr suspension assy member Ⓧ body.",
+        "4. Check bolt cross member S/A frame Ⓧ Body.",
+        "5. Check nut lateral Rod Ⓧ RR Axle.",
+        "6. Check nut shock absorber Ⓧrear axle.",
+        "7. Check nut arm assy upper Ⓧ rear axle.",
+        "8. Check nut arm assy lower Ⓧ rear axle.",
+        "9. Check nut arm assy lower Ⓧ body.",
+        "10. Check nut leaf spring Ⓧ body.",
+        "11. Check nut leaf spring Ⓧ body.",
+        "12. Check bolt fuel tank Ⓧ body.",
+        "13. Check bolt ropeller shaft Ⓧ rear axle.",
+        "14. Check bolt ropeller shaft Ⓧ front axle (4WD).",
+        "15. Check nut exhaust manifold Ⓧ fr exhaust pipe.",
+        "16. Check nut front exhaust pipe Ⓧ rear exhaust pipe."
+    ]},
+    { no: 3, area: "Fr bumper area", items: [
+        "1. Check appearance fr bumper lower.",
+        "2. Check part assembly fr bumper lower.",
+        "3. Check part assembly fender liner."
+    ]},
+    { no: 4, area: "Radiator core area", items: [
+        "1. Check appearance radiator lower.",
+        "2. Check wiring and piping area radiator."
+    ]},
+    { no: 5, area: "Fr suspenssion & tire Rh", items: [
+        "1. Check suspenssion Rh.",
+        "2. Check caliper Rh.",
+        "3. Check appearance tire Rh."
+    ]},
+    { no: 6, area: "Fr suspenssion & tire Lh", items: [
+        "1. Check suspenssion Lh.",
+        "2. Check caliper Lh.",
+        "3. Check appearance tire Lh."
+    ]},
+    { no: 7, area: "Front differetial (4WD)", items: [
+        "1. Check appearance front differential.",
+        "2. Check part assembly fr differential."
+    ]},
+    { no: 8, area: "Engine area center", items: [
+        "1. Check part assembly engine area center.",
+        "2. Check wiring & piping."
+    ]},
+    { no: 9, area: "Transmission area", items: [
+        "1. Check appearance transmission.",
+        "2. Check part assembly fr differential.",
+        "3. Check oil pan transmission.",
+        "4. Check piping area transmission."
+    ]},
+    { no: 10, area: "Front mufler", items: [
+        "1. Check appearance transmission.",
+        "2. Check part assembly mufler.",
+        "3. Check wiring & piping."
+    ]},
+    { no: 11, area: "Fuel tank area", items: [
+        "1. Check appearance fuel tank.",
+        "2. Check part assembly fuel tank area.",
+        "3. Check wiring & piping."
+    ]},
+    { no: 12, area: "Propeller shaft", items: [
+        "1. Check appearance propeller shaft.",
+        "2. Check joint area propeller Ⓧ transmission.",
+        "3. Check bracket guard propeller shaft."
+    ]},
+    { no: 13, area: "Rear suspenssion & lower arm Rh", items: [
+        "1. Check suspenssion Rh.",
+        "2. Check wire sensor ABS Rh.",
+        "3. Check lower arm Rh."
+    ]},
+    { no: 14, area: "Rear tire Rh", items: [
+        "1. Check appearance tire Rh.",
+        "2. Check part assembly tire Rh.",
+        "3. Check wiring & piping Rh.",
+        "4. Check absorber Rh."
+    ]},
+    { no: 15, area: "Rear suspenssion & lower arm Lh", items: [
+        "1. Check suspenssion Lh.",
+        "2. Check wire sensor ABS Lh.",
+        "3. Check lower arm Lh."
+    ]},
+    { no: 16, area: "Rear tire Lh", items: [
+        "1. Check appearance tire Lh.",
+        "2. Check part assembly tire Lh.",
+        "3. Check wiring & piping Lh.",
+        "4. Check absorber Lh."
+    ]},
+    { no: 17, area: "Rear axle area", items: [
+        "1. Check appearance rear axle.",
+        "2. Check part assembly rear axle.",
+        "3. Check wiring & piping.",
+        "4. Check differensial."
+    ]},
+    { no: 18, area: "Spare tire area", items: [
+        "1. Check appearance spare tire.",
+        "2. Check bracket spare tire.",
+        "3. Check wheel disc."
+    ]},
+    { no: 19, area: "Sealer application", items: [
+        "1. Check  sealer application",
+    ]},
+    { no: 20, area: "Pasang cover engine", items: [
+        "1. Pasang clip cover engine.",
+        "2. Pasang bolt cover engine."
+    ]}
+];
+
+        // Generate the table
+        const tableBody = document.querySelector('#checksheet tbody');
+        
+        checkData.forEach(section => {
+            section.items.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                if (index === 0) {
+                    const noCell = document.createElement('td');
+                    noCell.rowSpan = section.items.length;
+                    noCell.textContent = section.no;
+                    row.appendChild(noCell);
+                    
+                    const areaCell = document.createElement('td');
+                    areaCell.rowSpan = section.items.length;
+                    areaCell.innerHTML = section.area.replace(/<br>/g, '<br>');
+                    row.appendChild(areaCell);
+                }
+                
+                const itemCell = document.createElement('td');
+                itemCell.textContent = item;
+                row.appendChild(itemCell);
+                
+                const methodCell = document.createElement('td');
+                methodCell.className = 'method-cell';
+                
+                const oBtn = document.createElement('button');
+                oBtn.className = 'method-btn o';
+                oBtn.textContent = 'O';
+                oBtn.addEventListener('click', () => {
+                    oBtn.classList.toggle('selected');
+                    xBtn.classList.remove('selected');
+                });
+
+                const xBtn = document.createElement('button');
+                xBtn.className = 'method-btn x';
+                xBtn.textContent = 'X';
+                xBtn.addEventListener('click', () => {
+                    xBtn.classList.toggle('selected');
+                    oBtn.classList.remove('selected');
+                });
+
+                methodCell.appendChild(oBtn);
+                methodCell.appendChild(xBtn);
+                row.appendChild(methodCell);
+
+                const noteCell = document.createElement('td');
+                const noteInput = document.createElement('textarea');
+                noteCell.appendChild(noteInput);
+                row.appendChild(noteCell);
+
+                tableBody.appendChild(row);
+            });
+        });
+
+        // Export to Excel function
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+                ['No', 'Area', 'Item Check', 'Metode', 'Note']
+            ];
+
+            let currentNo = '', currentArea = '';
+            const rows = document.querySelectorAll('#checksheet tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.children;
+                if (cells.length === 5) {
+                    currentNo = cells[0].innerText;
+                    currentArea = cells[1].innerText;
+                    var item = cells[2].innerText;
+                    var method = cells[3].querySelector('.method-btn.selected')?.textContent || '';
+                    var note = cells[4].querySelector('textarea').value;
+                } else if (cells.length === 3) {
+                    var item = cells[0].innerText;
+                    var method = cells[1].querySelector('.method-btn.selected')?.textContent || '';
+                    var note = cells[2].querySelector('textarea').value;
+                }
+
+                wsData.push([currentNo, currentArea, item, method, note]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Checksheet');
+
+            const name = document.getElementById('name').value || 'unknown';
+            const npk = document.getElementById('npk').value || '0000';
+            const fileName = `Checksheet_${name}_${npk}.xlsx`;
+
+            XLSX.writeFile(wb, fileName);
+        });
+    </script>
+</body>
+</html>
